@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Secrets & Local Configurations (CRITICAL)
+.env
+.env.*
+!.env.example
+
+# Testing, Evals & Coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local Vector DB & Redis Data
+qdrant_storage/
+redis_data/
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+*.swp

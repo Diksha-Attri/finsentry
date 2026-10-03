@@ -1,0 +1,95 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "finsentry"
+version = "0.1.0"
+description = "Autonomous Multi-Agent SEC 10-K Due Diligence & Discrepancy Auditing Engine"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+authors = [
+    { name = "Diksha", email = "diksha@finsentry.org" }
+]
+license = { text = "MIT" }
+
+dependencies = [
+    # Core Orchestration & LLM
+    "langgraph>=0.2.60",
+    "langchain-core>=0.3.30",
+    "langchain-openai>=0.3.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "instructor>=1.7.0",
+
+    # API & Serving
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "httpx>=0.28.0",
+    "sse-starlette>=2.2.0",
+    "redis[hiredis]>=5.2.0",
+
+    # Ingestion & Hybrid RAG
+    "qdrant-client>=1.13.0",
+    "rank-bm25>=0.2.2",
+    "flashrank>=0.2.9",
+    "beautifulsoup4>=4.12.3",
+    "lxml>=5.3.0",
+    "pdfplumber>=0.11.4",
+    "pandas>=2.2.3",
+
+    # Security & Tool Sandbox
+    "RestrictedPython>=8.0",
+
+    # Observability & Continuous Evaluation
+    "langfuse>=2.57.0",
+    "ragas>=0.2.10",
+    "deepeval>=2.4.0",
+    "datasets>=3.2.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.25.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.9.0",
+    "mypy>=1.14.0",
+    "pre-commit>=4.0.0",
+    "types-requests>=2.32.0",
+    "types-beautifulsoup4>=4.12.0"
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+lint.select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "SIM",  # flake8-simplify
+]
+lint.ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
