@@ -51,3 +51,7 @@ clean:
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
+
+frontend:
+	@echo "Starting FinSentry Streamlit Dashboard..."
+	.venv/bin/streamlit run frontend/app.py --server.port 8501
