@@ -1,3 +1,4 @@
+.PHONY: frontend
 .PHONY: help install lint format typecheck test eval clean run-backend up down
 
 PYTHON := python3
@@ -55,3 +56,8 @@ clean:
 frontend:
 	@echo "Starting FinSentry Streamlit Dashboard..."
 	.venv/bin/streamlit run frontend/app.py --server.port 8501
+
+.PHONY: run
+run:
+	@echo "Starting FinSentry FastAPI Gateway on port 8000..."
+	PYTHONPATH=backend .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
