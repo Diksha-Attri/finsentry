@@ -1,0 +1,24 @@
+[
+  {
+    "id": "GOLD-AAPL-2024-LIQ",
+    "ticker": "AAPL",
+    "target_year": "2024",
+    "input_query": "Audit Apple's balance sheet working capital and evaluate if management claims regarding sufficient liquidity match reality.",
+    "expected_metric": "Current Ratio",
+    "expected_metric_min": 0.8,
+    "expected_metric_max": 2.2,
+    "expected_flags": ["DISCREPANCY", "COVENANT"],
+    "ground_truth_context": "Current Assets: $145,000M, Current Liabilities: $82,000M. Credit agreements contain affirmative and negative covenants."
+  },
+  {
+    "id": "GOLD-MSFT-2024-DEBT",
+    "ticker": "MSFT",
+    "target_year": "2024",
+    "input_query": "Verify total debt obligations and highlight any credit facility restrictions.",
+    "expected_metric": "Current Ratio",
+    "expected_metric_min": 0.5,
+    "expected_metric_max": 3.0,
+    "expected_flags": ["COVENANT"],
+    "ground_truth_context": "Senior notes require maintaining fixed-charge coverage ratios."
+  }
+]
