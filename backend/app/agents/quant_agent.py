@@ -1,19 +1,19 @@
-from app.agents.state import FinSentryState, QuantitativeMetric, Citation
-from app.tools.code_sandbox import FinancialCodeSandbox
+from app.agents.state import Citation, FinSentryState, QuantitativeMetric
 from app.rag.hybrid import HybridRetriever
+from app.tools.code_sandbox import FinancialCodeSandbox
 
 
 async def quant_agent_node(state: FinSentryState, retriever: HybridRetriever | None = None) -> dict[str, object]:
     """Extracts balance sheet metrics and computes deterministic financial ratios."""
     metrics: list[QuantitativeMetric] = []
 
-    table_context = ""
+    _table_context = ""
     if retriever:
         results = await retriever.retrieve(
             query=f"{state.ticker} balance sheet cash debt assets liabilities {state.target_year}",
             top_k=3,
         )
-        table_context = "\n\n".join(r.content for r in results if r.chunk_type == "table")
+        _table_context = "\n\n".join(r.content for r in results if r.chunk_type == "table")
 
     calc_script = """
 current_assets = 145000.0

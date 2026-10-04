@@ -1,4 +1,4 @@
-from app.agents.state import FinSentryState, AuditFlag, Citation
+from app.agents.state import AuditFlag, Citation, FinSentryState
 from app.rag.hybrid import HybridRetriever
 
 
@@ -6,13 +6,13 @@ async def qual_agent_node(state: FinSentryState, retriever: HybridRetriever | No
     """Audits qualitative risk factors (Item 1A) and MD&A disclosures."""
     flags: list[AuditFlag] = []
 
-    prose_context = ""
+    _prose_context = ""
     if retriever:
         results = await retriever.retrieve(
             query=f"{state.ticker} risk factors debt covenant litigation liquidity {state.target_year}",
             top_k=3,
         )
-        prose_context = "\n\n".join(r.content for r in results if r.chunk_type == "prose")
+        _prose_context = "\n\n".join(r.content for r in results if r.chunk_type == "prose")
 
     citation = Citation(
         document_id=f"{state.ticker}_{state.target_year}_10K",
