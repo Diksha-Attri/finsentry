@@ -1,5 +1,6 @@
 import json
 from collections.abc import AsyncGenerator
+from typing import Any
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -7,6 +8,7 @@ from sse_starlette.sse import EventSourceResponse  # type: ignore[import-untyped
 from app.agents.graph import finsentry_graph
 from app.agents.state import FinSentryState
 from app.core.config import get_settings
+from app.ingestion.service import IngestionService
 
 settings = get_settings()
 
@@ -16,7 +18,6 @@ app = FastAPI(
     description="Production Multi-Agent Financial Due Diligence Engine with Hybrid RAG and Sandboxed Verification.",
 )
 
-# Enable CORS for frontend integration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -30,6 +31,11 @@ class AuditRequest(BaseModel):
     ticker: str = Field(..., description="Stock ticker symbol, e.g. AAPL")
     target_year: str = Field(..., description="Target fiscal year, e.g. 2024")
     query: str = Field(..., description="Specific due diligence or audit inquiry")
+
+
+class IngestRequest(BaseModel):
+    ticker: str = Field(..., description="Stock ticker symbol to fetch from SEC EDGAR")
+    form: str = Field(default="10-K", description="SEC form type, e.g. 10-K or 10-Q")
 
 
 class HealthResponse(BaseModel):
@@ -46,6 +52,17 @@ async def health_check() -> HealthResponse:
         version="0.1.0",
         environment=settings.ENVIRONMENT,
     )
+
+
+@app.post("/api/v1/ingest")
+async def ingest_sec_filing(request: IngestRequest) -> dict[str, Any]:
+    """Fetches, parses, and indexes the latest SEC filing for the specified ticker."""
+    try:
+        service = IngestionService()
+        result = await service.ingest_filing(ticker=request.ticker, form=request.form)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}") from e
 
 
 @app.post("/api/v1/audit/sync")
@@ -81,17 +98,15 @@ async def run_audit_stream(request: AuditRequest) -> EventSourceResponse:
     )
 
     async def event_generator() -> AsyncGenerator[dict[str, str], None]:
-        # Send initial start event
         yield {
             "event": "workflow_start",
             "data": json.dumps({"ticker": request.ticker.upper(), "year": request.target_year}),
         }
 
         try:
-            # astream yields whenever a node completes execution
             async for step_output in finsentry_graph.astream(initial_state):
                 for node_name, node_update in step_output.items():
-                    event_payload = {
+                    event_payload: dict[str, Any] = {
                         "node": node_name,
                         "messages": node_update.get("messages", []),
                     }

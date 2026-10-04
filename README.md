@@ -201,11 +201,3 @@ Distributed under the MIT License.
 
 ---
 
-### Step 3: Push to GitHub from Terminal
-
-Once saved in VS Code, run in the terminal:
-
-```bash
-git add README.md
-git commit -m "docs: add executive architecture README with system diagrams and benchmark specs"
-git push
